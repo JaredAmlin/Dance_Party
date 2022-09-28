@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: fb2616075546b97489783c12b39fc595
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Chalet
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 3cd09f26a793c1b46b193d46321e87c5, type: 3}
+  - {fileID: 12800000, guid: 7ba9c21af2bf41b4e8ce95705b7b981f, type: 3}
+  - {fileID: 12800000, guid: 5a3576bc37a0a484d9bb8ef1e5d2bd95, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

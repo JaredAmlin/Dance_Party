@@ -103,12 +103,12 @@ namespace StarterAssets
         [SerializeField] private CinemachineVirtualCamera _roomCam;
         private int _mainCamPriority = 11, _lowCamPriority = 9;
 
-        [SerializeField] private GameObject _cinematicDirector;
+        [SerializeField] private GameObject _cinematicDirector, _tutorialDirector, _tutorialText;
 
         private float _cinematicWaitTime = 5f;
         private float _timeToWait = 0f;
 
-        private bool _hasStoppedCinematic, _hasStartedCinematic = false;
+        private bool _hasStoppedCinematic, _hasStartedCinematic, _isTutorialActive = false;
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
         private PlayerInput _playerInput;
@@ -166,7 +166,9 @@ namespace StarterAssets
             //assign wait time
             _timeToWait = Time.time + _cinematicWaitTime;
 
+            //set bools
             _hasStoppedCinematic = true;
+            _isTutorialActive = true;
         }
 
         private void Update()
@@ -232,7 +234,7 @@ namespace StarterAssets
                     _cinematicDirector.SetActive(false);
                     _hasStoppedCinematic = true;
                     _hasStartedCinematic = false;
-                    Debug.Log("Mouse stops the cinematic cut!");
+                    //Debug.Log("Mouse stops the cinematic cut!");
                 }
             }
 
@@ -399,13 +401,8 @@ namespace StarterAssets
                     _cinematicDirector.SetActive(false);
                     _hasStoppedCinematic = true;
                     _hasStartedCinematic = false;
-                    Debug.Log("Keyboard stops the cinematic cut!");
+                    //Debug.Log("Keyboard stops the cinematic cut!");
                 }
-            }
-
-            if (keyboard.rKey.wasPressedThisFrame)
-            {
-                SetCameraPriority();
             }
 
             if (Time.time > _timeToWait)
@@ -416,7 +413,24 @@ namespace StarterAssets
                     _cinematicDirector.SetActive(true);
                     _hasStartedCinematic = true;
                     _hasStoppedCinematic = false;
-                    Debug.Log("It's time to start the cinematic cut!");
+                    //Debug.Log("It's time to start the cinematic cut!");
+                }
+            }
+
+            //Set cam priority
+            if (keyboard.rKey.wasPressedThisFrame)
+            {
+                SetCameraPriority();
+            }
+
+            //Skip Tutorial
+            if (_isTutorialActive == true)
+            {
+                if (keyboard.tKey.wasPressedThisFrame)
+                {
+                    _isTutorialActive = false;
+                    _tutorialText.SetActive(false);
+                    _tutorialDirector.SetActive(false);
                 }
             }
         }
