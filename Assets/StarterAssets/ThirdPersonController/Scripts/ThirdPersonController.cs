@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
+using Cinemachine;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -98,6 +99,17 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
+        //Things I added to Unity script
+        [SerializeField] private CinemachineVirtualCamera _roomCam;
+        private int _mainCamPriority = 11, _lowCamPriority = 9;
+
+        [SerializeField] private GameObject _cinematicDirector;
+
+        private float _cinematicWaitTime = 5f;
+        private float _timeToWait = 0f;
+
+        private bool _hasStoppedCinematic, _hasStartedCinematic = false;
+
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
         private PlayerInput _playerInput;
 #endif
@@ -150,6 +162,11 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+            //assign wait time
+            _timeToWait = Time.time + _cinematicWaitTime;
+
+            _hasStoppedCinematic = true;
         }
 
         private void Update()
@@ -159,6 +176,9 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+
+            //custom camera controls for keyboard
+            KeyboardControls();
         }
 
         private void LateUpdate()
@@ -200,6 +220,20 @@ namespace StarterAssets
 
                 _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
                 _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+            }
+
+            //check mouse for movement to disable cinematic shot
+            if (_input.look.sqrMagnitude > _threshold)
+            {
+                _timeToWait = Time.time + _cinematicWaitTime;
+
+                if (_hasStoppedCinematic == false)
+                {
+                    _cinematicDirector.SetActive(false);
+                    _hasStoppedCinematic = true;
+                    _hasStartedCinematic = false;
+                    Debug.Log("Mouse stops the cinematic cut!");
+                }
             }
 
             // clamp our rotations so our values are limited 360 degrees
@@ -345,6 +379,58 @@ namespace StarterAssets
             if (_verticalVelocity < _terminalVelocity)
             {
                 _verticalVelocity += Gravity * Time.deltaTime;
+            }
+        }
+
+        //custom method for changing camera
+        void KeyboardControls()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard == null)
+                return;
+
+            if (keyboard.anyKey.isPressed)
+            {
+                _timeToWait = Time.time + _cinematicWaitTime;
+
+                if (_hasStoppedCinematic == false)
+                {
+                    //disable director
+                    _cinematicDirector.SetActive(false);
+                    _hasStoppedCinematic = true;
+                    _hasStartedCinematic = false;
+                    Debug.Log("Keyboard stops the cinematic cut!");
+                }
+            }
+
+            if (keyboard.rKey.wasPressedThisFrame)
+            {
+                SetCameraPriority();
+            }
+
+            if (Time.time > _timeToWait)
+            {
+                if (_hasStartedCinematic == false)
+                {
+                    //enable director
+                    _cinematicDirector.SetActive(true);
+                    _hasStartedCinematic = true;
+                    _hasStoppedCinematic = false;
+                    Debug.Log("It's time to start the cinematic cut!");
+                }
+            }
+        }
+
+        //custom method for setting camera priority
+        void SetCameraPriority()
+        {
+            if (_roomCam.Priority != _mainCamPriority)
+            {
+                _roomCam.Priority = _mainCamPriority;
+            }
+            else
+            {
+                _roomCam.Priority = _lowCamPriority;
             }
         }
 

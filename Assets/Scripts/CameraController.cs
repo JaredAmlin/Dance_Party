@@ -9,17 +9,12 @@ public class CameraController : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera _roomCam;
     private int _mainCamPriority = 11, _lowCamPriority = 9;
 
-    void Start()
-    {
-       
-    }
-
     private void Update()
     {
-        KeyboardControlls();
+        KeyboardControls();
     }
 
-    void KeyboardControlls()
+    void KeyboardControls()
     {
         var keyboard = Keyboard.current;
         if (keyboard == null)
